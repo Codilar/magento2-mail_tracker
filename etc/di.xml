@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Codilar\MailTracker\Api\MailRepositoryInterface" type="Codilar\MailTracker\Model\MailRepository" />
+    <type name="Magento\Framework\Mail\MessageInterface">
+        <plugin name="appendTrackerInfoToBody" type="Codilar\MailTracker\Plugin\Mail\MessageInterface" />
+    </type>
+</config>
