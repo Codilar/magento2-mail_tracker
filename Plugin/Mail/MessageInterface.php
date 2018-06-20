@@ -63,7 +63,7 @@ class MessageInterface
             $mail = $this->mailRepository->create();
             $mail->setFrom($subject->getFrom())->setTo(implode(",", $subject->getRecipients()))->setBody($body);
             $now = $this->timezone->date();
-            $mail->setOpenedAt($now->format('Y-m-d H:i:s'));
+            $mail->setCreatedAt($now->format('Y-m-d H:i:s'));
             $this->mailRepository->save($mail);
             /* @var \Codilar\MailTracker\Block\Tracker $tracker */
             $tracker = $this->layout->createBlock(Tracker::class, "codilar_mailtracker");
