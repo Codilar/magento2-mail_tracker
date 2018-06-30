@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Codilar_MailTracker::menu" title="Codilar" translate="title" module="Codilar_MailTracker" sortOrder="30" resource="Codilar_MailTracker::menu"/>
+        <add id="Codilar_MailTracker::mail_tracker" title="Mail Tracker" translate="title" module="Codilar_MailTracker" sortOrder="100" parent="Codilar_MailTracker::menu" resource="Codilar_MailTracker::mail_tracker"/>
+        <add id="Codilar_MailTracker::mail_tracker_list" title="View All Mails" translate="title" module="Codilar_MailTracker" sortOrder="10" parent="Codilar_MailTracker::mail_tracker" action="codilar/mailtracker" resource="Codilar_MailTracker::mail_tracker_list"/>
+    </menu>
+</config>

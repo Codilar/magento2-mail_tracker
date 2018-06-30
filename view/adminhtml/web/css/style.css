@@ -1,0 +1,5 @@
+#menu-codilar-mailtracker-menu > a:before{
+    background: url(../images/logo-bnw.png) no-repeat center;
+    background-size: 23px auto;
+    content: "";
+}

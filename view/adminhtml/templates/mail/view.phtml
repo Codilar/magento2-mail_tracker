@@ -1,0 +1,105 @@
+<?php
+/** @var \Codilar\MailTracker\Block\Adminhtml\Mail\View $block */
+$mail = $block->getMail();
+$goBackUrl = $block->getGoBackUrl();
+?>
+<?php if ($mail) : ?>
+    <div class="mail_container">
+        <h3><a href="<?= $block->getGoBackUrl() ?>"><?= __("Go Back") ?></a></h3>
+        <div class="header-content">
+            <div class="row">
+                <label><?= __("From") ?></label>
+                <span><a href="mailto:<?= $mail->getFrom() ?>"><?= $mail->getFrom() ?></a></span>
+            </div>
+            <div class="row">
+                <label><?= __("To") ?></label>
+                <span><a href="mailto:<?= $mail->getTo() ?>"><?= $mail->getTo() ?></a></span>
+            </div>
+            <div class="row">
+                <label><?= __("Sent At") ?></label>
+                <span><?= $block->formatDate($mail->getCreatedAt(), \IntlDateFormatter::LONG, true) ?></span>
+            </div>
+            <div class="row">
+                <label><?= __("Opened At") ?></label>
+                <span>
+                    <?= $mail->getOpenedAt() ? $block->formatDate($mail->getOpenedAt(), \IntlDateFormatter::LONG, true) : __("Not yet opened") ?>
+                </span>
+            </div>
+            <div class="row">
+                <label><?= __("Additional Information") ?></label>
+                <span><a href="javascript:void(0)" data-information='<?= $block->jsonEncode($mail->getAdditionalInformation()) ?>' id="mail-additional-information"><?= __("Show") ?></a></span>
+            </div>
+        </div>
+        <div class="line_break"></div>
+        <div class="body-content">
+            <iframe class="mail-body" frameborder="0" scrolling="no" src="javascript:void(0);"><?= $mail->getBody() ?></iframe>
+        </div>
+    </div>
+    <style type="text/css">
+        .mail_container .line_break {
+            margin: 15px 0;
+            border-top: 1px dotted #8c8b8b;
+        }
+        .mail_container .header-content > .row {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid silver;
+            width: 45%;
+        }
+        .mail_container .header-content > .row > label {
+            font-weight: bold;
+            text-align: right;
+            display: inline-block;
+            min-width: 25%;
+            max-width: 25%;
+            border-right: 1px solid silver;
+            padding-right: 5%;
+            margin-right: 5%;
+            word-wrap: break-word;
+        }
+        .mail_container > .body-content > iframe.mail-body {
+            width: 100%;
+        }
+        .additional-information-container .row {
+            padding: 5px;
+            margin: 5px;
+        }
+        .additional-information-container .row label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .additional-information-container .row span {
+            word-wrap: break-word;
+        }
+    </style>
+    <script type="text/javascript">
+        require([
+            'jquery',
+            'Magento_Ui/js/modal/alert'
+        ], function ($, alert) {
+            var iframe = $(".mail_container > .body-content > iframe.mail-body");
+            iframe.contents().find('html > body').html(iframe.html());
+            iframe.on('load', function () {
+                iframe.css("height", iframe.get(0).contentWindow.document.body.scrollHeight + 'px');
+            });
+            iframe.trigger("load");
+
+            $('#mail-additional-information').on('click', function () {
+                var data = $(this).data('information');
+                var html = $("<div class='additional-information-container'></div>");
+                for(var i in data) {
+                    html.append("<div class='row'><label>"+i+"</label><span>"+data[i]+"</span></div>");
+                }
+                alert({
+                    title: $.mage.__("Additional Information"),
+                    content: html
+                });
+            })
+        });
+    </script>
+<?php else : ?>
+    <div class="notice">
+        <h1><?= __("The mail you requested for doesn't exist anymore") ?></h1>
+        <h3><?= __("Click %1 to go back", "<a href='$goBackUrl'>here</a>") ?></h3>
+    </div>
+<?php endif; ?>

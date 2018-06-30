@@ -27,6 +27,7 @@ use Magento\Framework\Serialize\Serializer\Json;
  * @method string getTo()
  * @method $this setBody(string $body)
  * @method string getBody()
+ * @method string getCreatedAt()
  * @method $this setOpenedAt(string $openedAt)
  * @method string getOpenedAt()
  */

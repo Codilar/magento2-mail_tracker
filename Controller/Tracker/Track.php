@@ -17,7 +17,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Codilar\MailTracker\Helper\Mail as MailHelper;
 
 class Track extends Action
 {
@@ -26,25 +26,25 @@ class Track extends Action
      */
     private $mailRepository;
     /**
-     * @var TimezoneInterface
+     * @var MailHelper
      */
-    private $timezone;
+    private $mailHelper;
 
     /**
      * Track constructor.
      * @param Context $context
      * @param MailRepositoryInterface $mailRepository
-     * @param TimezoneInterface $timezone
+     * @param MailHelper $mailHelper
      */
     public function __construct(
         Context $context,
         MailRepositoryInterface $mailRepository,
-        TimezoneInterface $timezone
+        MailHelper $mailHelper
     )
     {
         parent::__construct($context);
         $this->mailRepository = $mailRepository;
-        $this->timezone = $timezone;
+        $this->mailHelper = $mailHelper;
     }
 
     /**
@@ -57,18 +57,34 @@ class Track extends Action
      */
     public function execute()
     {
-        $emailId = $this->getRequest()->getParam(Tracker::EMAIL_ID_PARAM_NAME);
+        $emailId = $this->mailHelper->decrypt($this->getRequest()->getParam(Tracker::EMAIL_ID_PARAM_NAME));
         try {
             $mail = $this->mailRepository->load($emailId);
             if (empty($mail->getOpenedAt())) {
-                $now = $this->timezone->date();
-                $mail->setOpenedAt($now->format('Y-m-d H:i:s'));
-                $mail->setAdditionalInformation($_SERVER);
+                $mail->setOpenedAt(gmdate('Y-m-d H:i:s'));
+                $mail->setAdditionalInformation($this->getAllHeaders());
                 $this->mailRepository->save($mail);
             }
         } catch (NoSuchEntityException $noSuchEntityException){}
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $result->setContents("");
         return $result;
+    }
+
+    /**
+     * @return array|false
+     */
+    private function getAllHeaders() {
+        if (!function_exists('getallheaders')) {
+            $headers = [];
+            foreach ($_SERVER as $name => $value) {
+                if (substr($name, 0, 5) == 'HTTP_') {
+                    $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                }
+            }
+            return $headers;
+        } else {
+            return getallheaders();
+        }
     }
 }

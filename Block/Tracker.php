@@ -13,11 +13,32 @@ namespace Codilar\MailTracker\Block;
 use Codilar\MailTracker\Controller\Router;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Template;
+use Codilar\MailTracker\Helper\Mail as MailHelper;
 
 class Tracker extends Template
 {
 
     const EMAIL_ID_PARAM_NAME = "eid";
+    /**
+     * @var MailHelper
+     */
+    private $mailHelper;
+
+    /**
+     * Tracker constructor.
+     * @param Template\Context $context
+     * @param MailHelper $mailHelper
+     * @param array $data
+     */
+    public function __construct(
+        Template\Context $context,
+        MailHelper $mailHelper,
+        array $data = []
+    )
+    {
+        parent::__construct($context, $data);
+        $this->mailHelper = $mailHelper;
+    }
 
     protected function _prepareLayout()
     {
@@ -34,7 +55,7 @@ class Tracker extends Template
         if (!$emailId) {
             throw new LocalizedException(__("Email ID not initialized"));
         } else {
-            return $emailId;
+            return $this->mailHelper->encrypt($emailId);
         }
     }
 
